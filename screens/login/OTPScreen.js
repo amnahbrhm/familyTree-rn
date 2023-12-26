@@ -4,37 +4,28 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import { Colors, GeneralStyle, Padding } from "../../constants/styles";
 import { useLayoutEffect, useState } from "react";
 import Dropdown from "../../components/UI/Dropdown";
-import { getOtp } from "../../util/http";
+import { validateOtp } from "../../util/http";
 
-function LoginScreen({ navigation }) {
-  const [phone, onChangePhone] = useState("");
-  const [pref, onChangePref] = useState("");
+function OTPScreen({route, navigation }) {
+  const [code, onChangeCode] = useState("");
+  const { phone , pref} = route.params;
   const [errorMsg, onChangeErrorMsg] = useState("");
   const [inputStyles, onChangeinputStyles] = useState([styles.input]);
-  // const inputStyles = [styles.input];
-
-  const placeholder = {
-    label: "مفتاح الدولة",
-    value: null,
-  };
-  const options = [
-    { label: "+966", value: "966" },
-    { label: "+965", value: "965" },
-  ];
-  
+  function goBack() {
+    navigation.goBack();
+  }
   async function login() {
-    if (phone.length !== 9) {
+    if (code.length !== 5) {
       onChangeinputStyles([...inputStyles, styles.invalidInput]);
-      onChangeErrorMsg("رقم الجوال ناقص");
+      onChangeErrorMsg("الكود يجب ان يتكون من ٥ خانات");
       return;
     }
-    onChangeinputStyles([styles.input])
-    onChangeErrorMsg('')
-    const res = await getOtp(pref + phone);
+    onChangeinputStyles([styles.input]);
+    onChangeErrorMsg("");
+    const res = await validateOtp(pref+phone, code);
     console.log(res);
     if (res.success) {
-    //TODO add navigaion to otp screen
-    navigation.navigate('OTPScreen', {phone, pref})
+      //TODO -> user, token in lical storage and nav to home page
     } else {
       onChangeinputStyles([...inputStyles, styles.invalidInput]);
       onChangeErrorMsg(res.message);
@@ -42,35 +33,44 @@ function LoginScreen({ navigation }) {
   }
   return (
     <>
+      <View style={styles.backIcon}>
+        <Ionicons
+          onPress={goBack}
+          name="chevron-back-outline"
+          size={24}
+          color="black"
+        />
+      </View>
       <View style={styles.logo}>
         <Text style={styles.logoText}>Logo</Text>
       </View>
       <View style={styles.headerContiner}>
         <View style={styles.headerBG}>
-          <Text style={styles.title}>تسجيل الدخول</Text>
-          <Text style={styles.subTitle}>ادخل رقم هاتفك الجوال</Text>
+          {/* <Text style={styles.title}>رمز التحقق</Text> */}
+          <Text style={styles.subTitle}>ادخل رمز التحقق</Text>
+          <Text style={styles.subTitle}>المرسل على {phone}</Text>
           <View style={styles.inputContiner}>
-            <Dropdown
+            {/* <Dropdown
               onChangeText={onChangePref}
               value={pref}
               placeholder={placeholder}
               options={options}
-            />
+            /> */}
             <View style={styles.inputWithErrorMSGContiner}>
               <TextInput
                 style={[...inputStyles]}
-                onChangeText={onChangePhone}
-                value={phone}
-                placeholder="55xxxxxxxx"
+                onChangeText={onChangeCode}
+                value={code}
+                placeholder="xxxxx"
                 keyboardType="numeric"
-                maxLength={9}
+                maxLength={5}
               />
               <Text style={styles.errorMSG}>{errorMsg}</Text>
             </View>
           </View>
           <PrimaryButton onPress={login}>
             <View style={styles.buttonContiner}>
-              <Text style={styles.buttonText}> تسجيل الدخول</Text>
+              <Text style={styles.buttonText}> تفعيل </Text>
             </View>
           </PrimaryButton>
         </View>
@@ -79,7 +79,7 @@ function LoginScreen({ navigation }) {
   );
 }
 
-export default LoginScreen;
+export default OTPScreen;
 
 const styles = StyleSheet.create({
   contentContiner: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 20,
-    marginTop: 20,
+    // marginTop: 20,
     textAlign: "center",
   },
   inputContiner: {
@@ -150,13 +150,17 @@ const styles = StyleSheet.create({
     borderWidth: 0.8,
   },
   inputWithErrorMSGContiner: {
-    alignItems: 'flex-end'
+    alignItems: "flex-end",
   },
   errorMSG: {
     fontSize: 10,
-    color: 'red',
+    color: "red",
     paddingHorizontal: 10,
     paddingTop: 0,
-    marginTop: 0
-  }
+    marginTop: 0,
+  },
+  backIcon: {
+    margin: 20,
+    marginTop: 55
+  },
 });

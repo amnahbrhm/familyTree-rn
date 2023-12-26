@@ -1,8 +1,10 @@
 import { StyleSheet, Button, Text, View } from "react-native";
+import {useState} from "react"
 import HomeRoutes from "./navigations/HomeRoutes";
 import SearchRoutes from "./navigations/SearchRoutes";
 import ProfileRoutes from "./navigations/ProfileRoutes";
 import LoginScreen from "./screens/login/LoginScreen";
+import OTPScreen from "./screens/login/OTPScreen";
 import { StatusBar } from "expo-status-bar";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -13,13 +15,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-export default function App() {
+export default async function App() {
+
   const isLoggedIn = false;
   const navTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: isLoggedIn ? "#fff" : "#fff",
+      background: "#fff",
     },
   };
   return (
@@ -125,6 +128,7 @@ export default function App() {
             }}
           >
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="OTPScreen" component={OTPScreen} />
           </Stack.Navigator>
         )}
       </NavigationContainer>
