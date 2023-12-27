@@ -2,15 +2,22 @@ import PrimaryButton from "../../components/UI/PrimaryButton";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import { Colors, GeneralStyle, Padding } from "../../constants/styles";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useContext } from "react";
 import Dropdown from "../../components/UI/Dropdown";
-import { validateOtp } from "../../util/http";
+import { validateOtp } from "../../../util/http";
+import { AuthContext } from '../../store/auth-context';
+
 
 function OTPScreen({route, navigation }) {
   const [code, onChangeCode] = useState("");
   const { phone , pref} = route.params;
   const [errorMsg, onChangeErrorMsg] = useState("");
   const [inputStyles, onChangeinputStyles] = useState([styles.input]);
+
+
+  const authCtx = useContext(AuthContext);
+
+
   function goBack() {
     navigation.goBack();
   }
@@ -22,10 +29,15 @@ function OTPScreen({route, navigation }) {
     }
     onChangeinputStyles([styles.input]);
     onChangeErrorMsg("");
+    console.log(pref+phone, code);
     const res = await validateOtp(pref+phone, code);
     console.log(res);
     if (res.success) {
-      //TODO -> user, token in lical storage and nav to home page
+      console.log('start otp');
+      console.log(typeof(res.data.user));
+      console.log(res.data.user);
+      console.log('end otp');
+      authCtx.authenticate(res.data.token, res.data.user);
     } else {
       onChangeinputStyles([...inputStyles, styles.invalidInput]);
       onChangeErrorMsg(res.message);

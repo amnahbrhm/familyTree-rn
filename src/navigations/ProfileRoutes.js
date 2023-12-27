@@ -5,7 +5,7 @@ import ProfileScreen from "../screens/profiles/ProfileScreen";
 import { useLayoutEffect } from "react";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { Platform } from "react-native";
-import { Colors } from "../constants/styles";
+// import { Colors } from "../constants/styles";
 const Stack = createStackNavigator();
 
 export default function ProfileRoutes({ navigation, route }) {

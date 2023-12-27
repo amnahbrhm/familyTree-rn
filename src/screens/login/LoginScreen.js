@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import { Colors, GeneralStyle, Padding } from "../../constants/styles";
 import { useLayoutEffect, useState } from "react";
 import Dropdown from "../../components/UI/Dropdown";
-import { getOtp } from "../../util/http";
+import { getOtp } from "../../../util/http";
 
 function LoginScreen({ navigation }) {
   const [phone, onChangePhone] = useState("");
