@@ -150,10 +150,6 @@ function Root() {
     async function fetchToken() {
       const storedToken = await AsyncStorage.getItem("token");
       const storedUser = await AsyncStorage.getItem("user");
-      console.log('start app.js');
-      console.log(typeof(storedUser));
-      console.log(storedUser);
-      console.log('end app.js');
 
       if (storedToken && storedUser) {
         authCtx.authenticate(storedToken, JSON.parse(storedUser));

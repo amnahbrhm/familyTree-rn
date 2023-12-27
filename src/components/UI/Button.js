@@ -25,14 +25,14 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 4,
     padding: 8,
-    backgroundColor: Colors.Iris300,
+    // backgroundColor: Colors.Iris300,
     borderWidth: 1,
-    borderColor: Colors.Iris300
+    // borderColor: Colors.Iris300
   },
   flat: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor:Colors.Danger
+    // borderColor:Colors.Danger
   },
   buttonText: {
     color: 'white',
@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
     color: Colors.Danger,
   },
   pressed: {
-    opacity: 0.75,
+    // opacity: 0.75,
     // backgroundColor: 'green',
-    borderRadius: 4,
+    // borderRadius: 4,
   },
 });

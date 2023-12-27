@@ -19,6 +19,10 @@ function AuthContextProvider({ children }) {
     console.log(typeof(user));
     console.log(user);
     console.log('end authCx');
+    console.log('e authcs');
+    console.log(JSON.stringify(user));
+    console.log(typeof(JSON.stringify(user)));
+    console.log('e');
 
     setAuthToken(token);
     setAuthUser(JSON.stringify(user));

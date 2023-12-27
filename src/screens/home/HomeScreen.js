@@ -9,14 +9,21 @@ import {
   Button,
 } from "react-native";
 import { GeneralStyle, Padding } from "../../constants/styles";
-import { useLayoutEffect, useContext, useRef, useState } from "react";
+import {
+  useLayoutEffect,
+  useContext,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
 import AuthContextProvider, { AuthContext } from "../../store/auth-context";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { Dimensions } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function HomeScreen({ navigation }) {
-  const authCtx = useContext(AuthContext);
-  const user = JSON.parse(authCtx.user);
+  const authCtx = useContext(AuthContext)
+  const [user, setUser] = useState("");
   const _carousel = useRef();
 
   const data = [
@@ -52,7 +59,13 @@ function HomeScreen({ navigation }) {
     },
   ];
   const [activeDotIndex, setActiveDotIndex] = useState(0);
-
+  useEffect(() => {
+    async function fetchUser() {
+      const storedUser = await AsyncStorage.getItem("user");
+      if (storedUser !== "") setUser(JSON.parse(storedUser));
+    }
+    fetchUser();
+  }, []);
   const _renderItem = ({ item, index }) => {
     return (
       <View style={styles.newsContiner}>
@@ -71,7 +84,7 @@ function HomeScreen({ navigation }) {
         <Text style={GeneralStyle.title}></Text>
       </View>
       <View style={styles.contentContiner}>
-        <Text>مرحبا {user.name}</Text>
+        <Text>مرحبا {user?.name}</Text>
         <Text>هلا فيك في تطبيق اسرة الدغيشم</Text>
       </View>
       <View

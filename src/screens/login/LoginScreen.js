@@ -13,12 +13,8 @@ function LoginScreen({ navigation }) {
   const [inputStyles, onChangeinputStyles] = useState([styles.input]);
   // const inputStyles = [styles.input];
 
-  const placeholder = {
-    label: "مفتاح الدولة",
-    value: null,
-  };
   const options = [
-    { label: "+966", value: "966" },
+    { label: "+966", value: "966", selected: true },
     { label: "+965", value: "965" },
   ];
   
@@ -53,7 +49,7 @@ function LoginScreen({ navigation }) {
             <Dropdown
               onChangeText={onChangePref}
               value={pref}
-              placeholder={placeholder}
+              placeholder='مفتاح الدولة'
               options={options}
             />
             <View style={styles.inputWithErrorMSGContiner}>
@@ -117,7 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
 
-    // alignItems: "center",
+    alignItems: "center",
     justifyContent: "center",
   },
   input: {
