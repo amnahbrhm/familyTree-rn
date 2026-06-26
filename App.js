@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import { StyleSheet, Button, Text, View } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import HomeRoutes from "./src/navigations/HomeRoutes";

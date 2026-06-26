@@ -7,6 +7,8 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   Button,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import { GeneralStyle, Padding } from "../../constants/styles";
 import {
@@ -17,8 +19,6 @@ import {
   useState,
 } from "react";
 import AuthContextProvider, { AuthContext } from "../../store/auth-context";
-import Carousel, { Pagination } from "react-native-snap-carousel";
-import { Dimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function HomeScreen({ navigation }) {
@@ -59,6 +59,8 @@ function HomeScreen({ navigation }) {
     },
   ];
   const [activeDotIndex, setActiveDotIndex] = useState(0);
+  const windowWidth = Dimensions.get("window").width;
+  const itemWidth = windowWidth / 2;
   useEffect(() => {
     async function fetchUser() {
       const storedUser = await AsyncStorage.getItem("user");
@@ -68,7 +70,7 @@ function HomeScreen({ navigation }) {
   }, []);
   const _renderItem = ({ item, index }) => {
     return (
-      <View style={styles.newsContiner}>
+      <View style={[styles.newsContiner, { width: itemWidth - 12, marginHorizontal: 6 }]}>
         <View style={{ padding: 15 }}>
           <Text style={{ fontSize: 18, fontWeight: "700" }}>{item.title}</Text>
           <Text style={{ marginTop: 20, fontSize: 16 }}>
@@ -95,29 +97,35 @@ function HomeScreen({ navigation }) {
           direction: "rtl",
         }}
       >
-        <Carousel
+        <FlatList
           ref={_carousel}
           data={data}
+          keyExtractor={(item) => String(item.id)}
           renderItem={_renderItem}
-          sliderWidth={Dimensions.get("window").width}
-          itemWidth={Dimensions.get("window").width / 2}
-          onSnapToItem={(index) => setActiveDotIndex(index)}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={itemWidth}
+          decelerationRate="fast"
+          contentContainerStyle={{ paddingHorizontal: windowWidth / 4 }}
+          onMomentumScrollEnd={(e) =>
+            setActiveDotIndex(
+              Math.round(e.nativeEvent.contentOffset.x / itemWidth)
+            )
+          }
         />
-        <View style={{ flexDirection: "row" }}>
-          <Pagination
-            carouselRef={_carousel}
-            activeDotIndex={activeDotIndex}
-            dotsLength={data.length}
-            dotStyle={{
-              width: 15,
-              backgroundColor: "#EDCDA8",
-            }}
-            inactiveDotStyle={{
-              width: 10,
-              height: 10,
-              backgroundColor: "gray",
-            }}
-          />
+        <View style={{ flexDirection: "row", marginTop: 10 }}>
+          {data.map((_, i) => (
+            <View
+              key={i}
+              style={{
+                width: activeDotIndex === i ? 15 : 10,
+                height: 10,
+                borderRadius: 5,
+                marginHorizontal: 4,
+                backgroundColor: activeDotIndex === i ? "#EDCDA8" : "gray",
+              }}
+            />
+          ))}
         </View>
       </View>
       <Button
