@@ -1,4 +1,5 @@
 import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet, Button, Text, View } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import HomeRoutes from "./src/navigations/HomeRoutes";
@@ -164,12 +165,12 @@ function Root() {
 }
 export default function App() {
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="dark" />
       <AuthContextProvider>
         <Root />
       </AuthContextProvider>
-    </>
+    </GestureHandlerRootView>
   );
 }
 const styles = StyleSheet.create({
