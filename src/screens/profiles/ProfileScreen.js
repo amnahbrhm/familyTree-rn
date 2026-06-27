@@ -316,16 +316,18 @@ function ProfileScreen({ navigation, route }) {
         break;
       }
     }
-    if (!targetId) return; // dropped outside any wife section
-    // No-op if dropped back onto the child's current mother.
-    const currentMotherId = spouses.find((s) =>
-      (s.children || []).some((ch) => ch.id === child.id)
-    )?.id;
-    if (targetId === currentMotherId) return;
-    const mother = spouses.find((s) => s.id === targetId);
+    if (!targetId) return; // dropped outside any spouse section
+    const target = spouses.find((s) => s.id === targetId);
+    if (!target) return;
+    // No-op if the child is already this spouse's child.
+    if ((target.children || []).some((ch) => ch.id === child.id)) return;
+    // The dropped-on spouse supplies the missing parent of their own sex:
+    // a husband => father, a wife => mother.
+    const kind = target.sex === "male" ? "father" : "mother";
+    const roleWord = kind === "father" ? "أبًا" : "أمًّا";
     Alert.alert(
-      "تعيين الأم",
-      `هل تجعل ${mother?.fullname || mother?.firstname || "هذه الزوجة"} أمًّا لـ ${
+      "تعيين أحد الوالدين",
+      `هل تجعل ${target.fullname || target.firstname || target.name} ${roleWord} لـ ${
         child.fullname || child.firstname || child.name
       }؟`,
       [
@@ -334,10 +336,10 @@ function ProfileScreen({ navigation, route }) {
           text: "تأكيد",
           onPress: async () => {
             try {
-              await setParent(child.id, "mother", targetId, authCtx.token);
+              await setParent(child.id, kind, targetId, authCtx.token);
               load();
             } catch (e) {
-              Alert.alert("خطأ", e?.response?.data?.message || "تعذّر تعيين الأم");
+              Alert.alert("خطأ", e?.response?.data?.message || "تعذّر التعيين");
             }
           },
         },
@@ -361,7 +363,7 @@ function ProfileScreen({ navigation, route }) {
     );
   }
 
-  const { parents, spouses, childrenWithUnknownMother } = profile;
+  const { parents, spouses, childrenWithUnknownMother, childrenWithUnknownFather } = profile;
   const headerSub = profile.deceased
     ? `${year(profile.birthDate) ?? "?"}–${year(profile.deathDate) ?? "?"}${
         profile.age != null ? ` (${profile.age})` : ""
@@ -541,6 +543,45 @@ function ProfileScreen({ navigation, route }) {
             </Text>
           ) : null}
           {childrenWithUnknownMother.map((c) =>
+            canManage && spouses && spouses.length > 0 ? (
+              <DraggableChild
+                key={c.id}
+                child={c}
+                onPickup={onChildPickup}
+                onDrop={onChildDrop}
+                onPress={() => openProfile(c.id)}
+                isDragging={draggingChild === c.id}
+              />
+            ) : (
+              <PersonRow
+                key={c.id}
+                person={c}
+                onPress={() => openProfile(c.id)}
+                onRemove={
+                  canManage
+                    ? () =>
+                        confirmRemove(`الابن/الابنة ${c.name}`, () =>
+                          removeChild(profile.id, c.id, authCtx.token)
+                        )
+                    : undefined
+                }
+              />
+            )
+          )}
+        </View>
+      ) : null}
+
+      {/* Children with unknown father (mirror — for a mother whose child has no
+          father linked) */}
+      {childrenWithUnknownFather && childrenWithUnknownFather.length > 0 ? (
+        <View style={styles.section}>
+          <SectionTitle>أبناء (الأب غير معروف)</SectionTitle>
+          {canManage && spouses && spouses.length > 0 ? (
+            <Text style={styles.dragHint}>
+              اضغط مطوّلًا على الابن واسحبه إلى الزوج لتعيينه أبًا له
+            </Text>
+          ) : null}
+          {childrenWithUnknownFather.map((c) =>
             canManage && spouses && spouses.length > 0 ? (
               <DraggableChild
                 key={c.id}
